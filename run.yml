@@ -1,0 +1,29 @@
+---
+
+- hosts: all
+  become: true
+  pre_tasks:
+
+  - name: UPDATE Ubuntu
+    tags: update
+    apt:
+      upgrade: dist
+      update_cache: yes
+    when: ansible_distribution == "Ubuntu"
+
+- hosts: Control_servers
+  become: true
+  tasks:
+
+  - name: Copy
+    run_once: yes
+    fetch: src=file.pcap dest=pcapfiles/ flat=yes
+    when: inventory_hostname == "192.168.56.104"
+
+- hosts: Manage_servers
+  become: true
+  tasks:
+
+  - name: Output
+    copy: src=pcapfiles/file.pcap dest=~/PCAP/
+    when: inventory_hostname == "192.168.56.102"
